@@ -35,5 +35,9 @@ public interface BeneficiaryRepository extends JpaRepository<BeneficiaryDetails,
     @Query("SELECT b FROM BeneficiaryDetails b WHERE b.customerId = :customerId " +
             "AND b.beneficiaryStatus = 'PENDING'")
     List<BeneficiaryDetails> findPendingActivationBeneficiaries(@Param("customerId") Integer customerId);
-}
 
+    /**
+     * Find beneficiary by account number
+     */
+    Optional<BeneficiaryDetails> findByBeneficiaryAccountNumber(String beneficiaryAccountNumber);
+}
