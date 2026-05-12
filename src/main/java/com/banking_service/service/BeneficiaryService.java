@@ -34,7 +34,7 @@ public class BeneficiaryService {
     /**
      * Add a new beneficiary with comprehensive validations
      */
-    public AddBeneficiaryResponseDTO addBeneficiary(AddBeneficiaryRequestDTO requestDTO) throws     BeneficiaryException {
+    public AddBeneficiaryResponseDTO addBeneficiary(AddBeneficiaryRequestDTO requestDTO) throws BeneficiaryException {
 
         // Validation 1: Account numbers must match
         validateAccountNumbersMatch(requestDTO);
@@ -50,6 +50,9 @@ public class BeneficiaryService {
 
         // Validation 5: Check if beneficiary account belongs to logged-in customer
         validateBeneficiaryAccountNotOwnAccount(requestDTO);
+
+        // Validation 5.5: Check if beneficiary account number is already used by any customer
+        validateBeneficiaryAccountNumberUnique(requestDTO);
 
         // Validation 6: Check for duplicate beneficiary
         Optional<BeneficiaryDetails> existingBeneficiary = beneficiaryRepository.findDuplicateBeneficiary(
@@ -92,7 +95,7 @@ public class BeneficiaryService {
         AddBeneficiaryResponseDTO responseDTO = new AddBeneficiaryResponseDTO();
         responseDTO.setMessage("Beneficiary added successfully. Will be activated in 1 minute.");
         responseDTO.setBeneficiaryStatus(savedBeneficiary.getBeneficiaryStatus());
-        responseDTO.setActivationTime(null); // Will be set after 1 minute
+        responseDTO.setActivationTime(LocalDateTime.now().plusMinutes(1)); // Will be set after 1 minute
 
         return responseDTO;
     }
@@ -108,7 +111,7 @@ public class BeneficiaryService {
         AddBeneficiaryResponseDTO responseDTO = new AddBeneficiaryResponseDTO();
         responseDTO.setMessage("Existing beneficiary reactivated successfully. Will be activated in 1 minute.");
         responseDTO.setBeneficiaryStatus(updatedBeneficiary.getBeneficiaryStatus());
-        responseDTO.setActivationTime(null);
+        responseDTO.setActivationTime(LocalDateTime.now().plusMinutes(1));
 
         return responseDTO;
     }
@@ -119,18 +122,19 @@ public class BeneficiaryService {
      */
     @Scheduled(fixedRate = 60000) // Run every 60 seconds
     public void activatePendingBeneficiaries() {
-        LocalDateTime oneMinuteAgo = LocalDateTime.now().minusMinutes(1);
+       // LocalDateTime oneMinuteAgo = LocalDateTime.now().minusMinutes(1);
 
         // Find all PENDING_ACTIVATION beneficiaries created more than 1 minute ago
         List<BeneficiaryDetails> allBeneficiaries = beneficiaryRepository.findAll();
 
         for (BeneficiaryDetails beneficiary : allBeneficiaries) {
             if ("PENDING_ACTIVATION".equals(beneficiary.getBeneficiaryStatus())
-                    && beneficiary.getCreatedDate() != null
-                    && beneficiary.getCreatedDate().isBefore(oneMinuteAgo)) {
+ //                   && beneficiary.getCreatedDate() != null
+ //                  && beneficiary.getCreatedDate().isBefore(oneMinuteAgo)
+            ) {
 
                 beneficiary.setBeneficiaryStatus("ACTIVE");
-                beneficiary.setActivationTime(LocalDateTime.now());
+                 beneficiary.setActivationTime(LocalDateTime.now().plusMinutes(1));
                 beneficiaryRepository.save(beneficiary);
             }
         }
@@ -188,5 +192,15 @@ public class BeneficiaryService {
             }
         }
     }
-}
 
+    /**
+     * Validation: Beneficiary account number must be unique across all customers
+     */
+    private void validateBeneficiaryAccountNumberUnique(AddBeneficiaryRequestDTO requestDTO) {
+        Optional<BeneficiaryDetails> existingBeneficiary = beneficiaryRepository.findByBeneficiaryAccountNumber(requestDTO.getBeneficiaryAccountNumber());
+
+        if (existingBeneficiary.isPresent()) {
+            throw new BeneficiaryException("Beneficiary account number is already in use by another customer");
+        }
+    }
+}

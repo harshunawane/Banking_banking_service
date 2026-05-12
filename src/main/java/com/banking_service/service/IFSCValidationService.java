@@ -15,12 +15,6 @@ public class IFSCValidationService {
 
     private static final String EXTERNAL_IFSC_VALIDATION_API = "http://localhost:8080/api/validateifsc/";
 
-    /**
-     * Validate IFSC code using external bank validation service
-     * @param ifscCode - IFSC code to validate
-     * @return IFSCValidationResponseDTO with bank details
-     * @throws BeneficiaryException if IFSC validation fails
-     */
     public IFSCValidationResponseDTO validateIFSC(String ifscCode) {
         try {
             String url = EXTERNAL_IFSC_VALIDATION_API + ifscCode;
