@@ -1,0 +1,296 @@
+{
+  "info": {
+    "_postman_id": "banking-service-collection",
+    "name": "Banking Service - Beneficiary Management",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Add Beneficiary - Success Scenario",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"customerId\": 1,\n  \"beneficiaryName\": \"Alice Brown\",\n  \"beneficiaryAccountNumber\": \"BENE001\",\n  \"confirmAccountNumber\": \"BENE001\",\n  \"ifscCode\": \"YESB00088\",\n  \"nickname\": \"Alice\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8081/api/beneficiary/add",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8081",
+          "path": [
+            "api",
+            "beneficiary",
+            "add"
+          ]
+        },
+        "description": "Add a new beneficiary for customer with ACTIVE account. Beneficiary will be PENDING_ACTIVATION initially and become ACTIVE after 1 minute."
+      }
+    },
+    {
+      "name": "2. Add Beneficiary - Account Mismatch Error",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"customerId\": 1,\n  \"beneficiaryName\": \"Bob White\",\n  \"beneficiaryAccountNumber\": \"BENE002\",\n  \"confirmAccountNumber\": \"BENE002_WRONG\",\n  \"ifscCode\": \"YESB00088\",\n  \"nickname\": \"Bob\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8081/api/beneficiary/add",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8081",
+          "path": [
+            "api",
+            "beneficiary",
+            "add"
+          ]
+        },
+        "description": "Test Case: Account numbers don't match - Should return error"
+      }
+    },
+    {
+      "name": "3. Add Beneficiary - Frozen Account Error",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"customerId\": 2,\n  \"beneficiaryName\": \"Charlie Davis\",\n  \"beneficiaryAccountNumber\": \"BENE003\",\n  \"confirmAccountNumber\": \"BENE003\",\n  \"ifscCode\": \"YESB00088\",\n  \"nickname\": \"Charlie\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8081/api/beneficiary/add",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8081",
+          "path": [
+            "api",
+            "beneficiary",
+            "add"
+          ]
+        },
+        "description": "Test Case: Customer account is FROZEN - Should return error"
+      }
+    },
+    {
+      "name": "4. Add Beneficiary - Blocked Account Error",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"customerId\": 3,\n  \"beneficiaryName\": \"Diana Evans\",\n  \"beneficiaryAccountNumber\": \"BENE004\",\n  \"confirmAccountNumber\": \"BENE004\",\n  \"ifscCode\": \"YESB00088\",\n  \"nickname\": \"Diana\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8081/api/beneficiary/add",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8081",
+          "path": [
+            "api",
+            "beneficiary",
+            "add"
+          ]
+        },
+        "description": "Test Case: Customer account is BLOCKED - Should return error"
+      }
+    },
+    {
+      "name": "5. Add Beneficiary - Invalid IFSC Error",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"customerId\": 1,\n  \"beneficiaryName\": \"Eva Frank\",\n  \"beneficiaryAccountNumber\": \"BENE005\",\n  \"confirmAccountNumber\": \"BENE005\",\n  \"ifscCode\": \"INVALID123\",\n  \"nickname\": \"Eva\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8081/api/beneficiary/add",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8081",
+          "path": [
+            "api",
+            "beneficiary",
+            "add"
+          ]
+        },
+        "description": "Test Case: Invalid IFSC code - External validation will fail"
+      }
+    },
+    {
+      "name": "6. Add Beneficiary - Duplicate Error",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"customerId\": 1,\n  \"beneficiaryName\": \"Frank Green\",\n  \"beneficiaryAccountNumber\": \"BENE006\",\n  \"confirmAccountNumber\": \"BENE006\",\n  \"ifscCode\": \"YESB00088\",\n  \"nickname\": \"Frank\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8081/api/beneficiary/add",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8081",
+          "path": [
+            "api",
+            "beneficiary",
+            "add"
+          ]
+        },
+        "description": "Test Case: Call this twice with same details - Second call should return duplicate error"
+      }
+    },
+    {
+      "name": "7. Get Active Beneficiaries",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8081/api/beneficiary/active/1",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8081",
+          "path": [
+            "api",
+            "beneficiary",
+            "active",
+            "1"
+          ]
+        },
+        "description": "Fetch all ACTIVE beneficiaries for customer ID 1. Call this AFTER waiting 1 minute following Add Beneficiary request."
+      }
+    },
+    {
+      "name": "8. Get Active Beneficiaries - Customer 2",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8081/api/beneficiary/active/2",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8081",
+          "path": [
+            "api",
+            "beneficiary",
+            "active",
+            "2"
+          ]
+        },
+        "description": "Fetch all ACTIVE beneficiaries for customer ID 2"
+      }
+    },
+    {
+      "name": "9. Get Active Beneficiaries - Customer 3",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8081/api/beneficiary/active/3",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8081",
+          "path": [
+            "api",
+            "beneficiary",
+            "active",
+            "3"
+          ]
+        },
+        "description": "Fetch all ACTIVE beneficiaries for customer ID 3"
+      }
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": []
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": []
+      }
+    }
+  ]
+}
+
