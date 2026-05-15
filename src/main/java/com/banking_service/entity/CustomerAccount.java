@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Entity
 @Table(name = "customer_account")
 @Data
@@ -27,5 +29,8 @@ public class CustomerAccount {
 
     @Column(nullable = false)
     private String bankAccountName;
+
+    @Column(name = "available_balance", precision = 15, scale = 2)  // Created because of US BNK-1082 Need customer balance
+    private BigDecimal availableBalance;
 }
 
